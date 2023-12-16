@@ -8,6 +8,7 @@
 // 1.0.0 初版
 // 1.0.1 アイテム選択拡張時のキャンセルボタン位置を調整
 // 1.0.2 タッチUI無効化時にエラーが出る問題を修正
+// 1.0.3 可視行が5行を超えた場合に項目が表示されない問題を修正
 //=============================================================================
 // TMPlugin - アイテム選択拡張
 // バージョン: 1.1.0
@@ -387,6 +388,21 @@ Imported.TMEventItemEx = true;
         this._messageWindow._helpWindow.openness = 0;
         this._eventItemWindow.setHelpWindow(this._messageWindow._helpWindow);
         this.addWindow(this._messageWindow._helpWindow);
+    };
+
+    const _Scene_Message_eventItemWindowRect = Scene_Message.prototype.eventItemWindowRect;
+    Scene_Message.prototype.eventItemWindowRect = function() {
+        let rect = _Scene_Message_eventItemWindowRect.call(this);
+        if (PluginManager.parameters("ARTM_TMEventItemExMz")) {
+            const numLines = Math.max(
+                TMPlugin.EventItemEx.NumVisibleRowsItem,
+                TMPlugin.EventItemEx.NumVisibleRowsKey,
+                TMPlugin.EventItemEx.NumVisibleRowsA,
+                TMPlugin.EventItemEx.NumVisibleRowsB
+            );
+            rect.height = this.calcWindowHeight(numLines, true);
+        }
+        return rect;
     };
 
 })();
